@@ -1,0 +1,1553 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>리틀 스토리북 (Little Storybook) - 7세 영어 그림책</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Jua&family=Noto+Sans+KR:wght@400;500;700&display=swap');
+
+    :root {
+      --bg-color: #FFF9EB;
+      --card-bg: #FFFFFF;
+      --primary: #FF8A3D;
+      --primary-dark: #E06D22;
+      --secondary: #4ECDC4;
+      --secondary-dark: #36B2A9;
+      --accent: #FFD166;
+      --text-main: #2D3436;
+      --text-sub: #636E72;
+      --highlight-word: #FFF0B3;
+      --highlight-border: #F5B041;
+      --shadow: 0 10px 25px rgba(45, 52, 54, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background-color: var(--bg-color);
+      background-image: radial-gradient(#FDE6B8 1.5px, transparent 1.5px);
+      background-size: 24px 24px;
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* 헤더 */
+    header {
+      width: 100%;
+      max-width: 960px;
+      padding: 18px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Jua', sans-serif;
+      font-size: 1.6rem;
+      color: var(--primary-dark);
+      cursor: pointer;
+    }
+
+    .logo-badge {
+      background: var(--primary);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 16px;
+      font-family: 'Fredoka', sans-serif;
+      font-size: 1.1rem;
+      box-shadow: 0 4px 0 var(--primary-dark);
+    }
+
+    .star-counter {
+      background: white;
+      padding: 8px 16px;
+      border-radius: 30px;
+      font-family: 'Jua', sans-serif;
+      font-size: 1.15rem;
+      color: #D98200;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border: 2px solid #FFE29A;
+    }
+
+    /* 메인 컨테이너 */
+    main {
+      width: 100%;
+      max-width: 960px;
+      padding: 10px 20px 40px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* 책장(홈) 화면 */
+    .bookshelf-title {
+      font-family: 'Jua', sans-serif;
+      font-size: 1.9rem;
+      color: var(--text-main);
+      margin: 10px 0 6px;
+      text-align: center;
+    }
+
+    .bookshelf-sub {
+      color: var(--text-sub);
+      font-size: 1rem;
+      margin-bottom: 28px;
+      text-align: center;
+    }
+
+    .book-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+      width: 100%;
+    }
+
+    .book-card {
+      background: var(--card-bg);
+      border-radius: 28px;
+      padding: 20px;
+      box-shadow: var(--shadow);
+      border: 3px solid #F3E8D2;
+      cursor: pointer;
+      transition: transform 0.22s ease, box-shadow 0.22s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .book-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 16px 32px rgba(255, 138, 61, 0.18);
+      border-color: var(--primary);
+    }
+
+    .book-cover-art {
+      width: 100%;
+      height: 200px;
+      border-radius: 20px;
+      overflow: hidden;
+      margin-bottom: 16px;
+      border: 2px solid #EFE6D5;
+    }
+
+    .book-level {
+      background: #E8F8F5;
+      color: var(--secondary-dark);
+      font-family: 'Jua', sans-serif;
+      font-size: 0.9rem;
+      padding: 4px 12px;
+      border-radius: 12px;
+      margin-bottom: 8px;
+    }
+
+    .book-title-en {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 1.45rem;
+      color: var(--text-main);
+      margin-bottom: 4px;
+    }
+
+    .book-title-ko {
+      font-size: 1rem;
+      color: var(--text-sub);
+      margin-bottom: 16px;
+      font-weight: 500;
+    }
+
+    .btn-start {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 12px 28px;
+      border-radius: 20px;
+      font-family: 'Jua', sans-serif;
+      font-size: 1.2rem;
+      cursor: pointer;
+      box-shadow: 0 5px 0 var(--primary-dark);
+      transition: transform 0.1s;
+      width: 80%;
+    }
+
+    .btn-start:active {
+      transform: translateY(4px);
+      box-shadow: 0 1px 0 var(--primary-dark);
+    }
+
+    /* 그림책 리더 화면 */
+    .reader-container {
+      width: 100%;
+      background: var(--card-bg);
+      border-radius: 32px;
+      padding: 24px;
+      box-shadow: var(--shadow);
+      border: 4px solid #F2E6CE;
+      display: none;
+      flex-direction: column;
+    }
+
+    .reader-top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .btn-home {
+      background: #F1F2F6;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 14px;
+      font-family: 'Jua', sans-serif;
+      font-size: 1rem;
+      color: var(--text-main);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-home:hover {
+      background: #E2E5EC;
+    }
+
+    .progress-dots {
+      display: flex;
+      gap: 8px;
+    }
+
+    .dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #E0E0E0;
+      transition: all 0.3s;
+    }
+
+    .dot.active {
+      background: var(--primary);
+      transform: scale(1.25);
+    }
+
+    .dot.done {
+      background: var(--secondary);
+    }
+
+    /* 일러스트 & 텍스트 영역 */
+    .story-stage {
+      display: grid;
+      grid-template-columns: 1.15fr 1fr;
+      gap: 24px;
+      align-items: center;
+    }
+
+    @media (max-width: 768px) {
+      .story-stage {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .illustration-frame {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      border-radius: 24px;
+      overflow: hidden;
+      border: 3px solid #EAE0CC;
+      background: #F8F9FA;
+      position: relative;
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.04);
+    }
+
+    .illustration-frame svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .sfx-badge {
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      background: rgba(255, 255, 255, 0.92);
+      border: 2px solid var(--accent);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-family: 'Jua', sans-serif;
+      font-size: 0.95rem;
+      color: #B7791F;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      transition: transform 0.15s;
+    }
+
+    .sfx-badge:hover {
+      transform: scale(1.06);
+    }
+
+    .text-panel {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100%;
+      padding: 8px 4px;
+    }
+
+    .english-sentence {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 1.70rem;
+      line-height: 1.55;
+      color: var(--text-main);
+      margin-bottom: 16px;
+      word-break: keep-all;
+    }
+
+    .word-token {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+    }
+
+    .word-token:hover {
+      background: #F0F4F8;
+    }
+
+    .word-token.key-word {
+      background: var(--highlight-word);
+      border-bottom: 3px solid var(--highlight-border);
+      font-weight: 600;
+    }
+
+    .word-token.speaking {
+      background: #FFD166;
+      transform: scale(1.08);
+    }
+
+    .korean-translation {
+      background: #F8F9FA;
+      border-left: 4px solid var(--secondary);
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      color: #4A5568;
+      margin-bottom: 18px;
+      display: none;
+      line-height: 1.5;
+    }
+
+    .korean-translation.visible {
+      display: block;
+      animation: fadeIn 0.25s ease;
+    }
+
+    /* 단어 학습 미니 카드 */
+    .vocab-box {
+      background: #FFFDF7;
+      border: 2px dashed #F5CBA7;
+      border-radius: 18px;
+      padding: 12px 16px;
+      margin-bottom: 18px;
+    }
+
+    .vocab-label {
+      font-size: 0.85rem;
+      color: #D35400;
+      font-weight: 700;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .vocab-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .vocab-chip {
+      background: white;
+      border: 2px solid #FAD7A0;
+      border-radius: 14px;
+      padding: 6px 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.15s;
+    }
+
+    .vocab-chip:hover {
+      background: #FEF5E7;
+      transform: translateY(-2px);
+    }
+
+    .vocab-en {
+      font-family: 'Fredoka', sans-serif;
+      font-weight: 600;
+      color: #E67E22;
+      font-size: 1.05rem;
+    }
+
+    .vocab-ko {
+      font-size: 0.95rem;
+      color: var(--text-main);
+      font-weight: 500;
+    }
+
+    /* 오디오 & 컨트롤 버튼 */
+    .audio-controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn-action {
+      flex: 1;
+      min-width: 120px;
+      padding: 12px 14px;
+      border: none;
+      border-radius: 16px;
+      font-family: 'Jua', sans-serif;
+      font-size: 1.05rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: transform 0.1s;
+    }
+
+    .btn-listen {
+      background: var(--secondary);
+      color: white;
+      box-shadow: 0 4px 0 var(--secondary-dark);
+    }
+
+    .btn-listen:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 var(--secondary-dark);
+    }
+
+    .btn-slow {
+      background: #74B9FF;
+      color: white;
+      box-shadow: 0 4px 0 #0984E3;
+    }
+
+    .btn-slow:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #0984E3;
+    }
+
+    .btn-translate {
+      background: #FFEAA7;
+      color: #8E6C00;
+      box-shadow: 0 4px 0 #FDCB6E;
+    }
+
+    .btn-translate:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #FDCB6E;
+    }
+
+    /* 하단 페이지 이동 */
+    .nav-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 24px;
+      padding-top: 18px;
+      border-top: 2px solid #F3ECE0;
+    }
+
+    .btn-nav {
+      padding: 12px 24px;
+      border-radius: 18px;
+      border: none;
+      font-family: 'Jua', sans-serif;
+      font-size: 1.15rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-prev {
+      background: #EDF2F7;
+      color: #4A5568;
+    }
+
+    .btn-prev:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .btn-next {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 4px 0 var(--primary-dark);
+    }
+
+    .btn-next:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 var(--primary-dark);
+    }
+
+    .page-indicator {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 1.1rem;
+      color: var(--text-sub);
+    }
+
+    /* 독후 퀴즈 화면 */
+    .quiz-container {
+      display: none;
+      width: 100%;
+      background: white;
+      border-radius: 32px;
+      padding: 32px 24px;
+      box-shadow: var(--shadow);
+      border: 4px solid #FFE29A;
+      text-align: center;
+    }
+
+    .quiz-badge {
+      display: inline-block;
+      background: #FFF3CD;
+      color: #B7791F;
+      font-family: 'Jua', sans-serif;
+      padding: 6px 16px;
+      border-radius: 20px;
+      margin-bottom: 12px;
+    }
+
+    .quiz-question-en {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 1.7rem;
+      color: var(--text-main);
+      margin-bottom: 6px;
+    }
+
+    .quiz-question-ko {
+      color: var(--text-sub);
+      font-size: 1.05rem;
+      margin-bottom: 24px;
+    }
+
+    .quiz-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      max-width: 680px;
+      margin: 0 auto 20px;
+    }
+
+    .quiz-option-btn {
+      background: #F8FAFC;
+      border: 3px solid #E2E8F0;
+      border-radius: 20px;
+      padding: 18px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .quiz-option-btn:hover {
+      border-color: var(--secondary);
+      background: #F0FDFB;
+    }
+
+    .quiz-option-btn.correct {
+      background: #D4EDDA;
+      border-color: #28A745;
+      color: #155724;
+    }
+
+    .quiz-option-btn.wrong {
+      background: #F8D7DA;
+      border-color: #DC3545;
+      color: #721C24;
+    }
+
+    .quiz-opt-en {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 1.35rem;
+      font-weight: 600;
+    }
+
+    .quiz-opt-ko {
+      font-size: 0.95rem;
+      color: var(--text-sub);
+    }
+
+    .feedback-msg {
+      font-family: 'Jua', sans-serif;
+      font-size: 1.3rem;
+      min-height: 36px;
+      margin-top: 10px;
+    }
+
+    /* 완료 축하 화면 */
+    .reward-screen {
+      display: none;
+      width: 100%;
+      background: white;
+      border-radius: 32px;
+      padding: 40px 24px;
+      box-shadow: var(--shadow);
+      border: 4px solid #FFD166;
+      text-align: center;
+    }
+
+    .trophy-svg {
+      width: 140px;
+      height: 140px;
+      margin: 0 auto 16px;
+      animation: bounce 1.5s infinite ease-in-out;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo" onclick="goHome()">
+      <span class="logo-badge">7세 영어</span>
+      <span>리틀 스토리북</span>
+    </div>
+    <div class="star-counter">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="#FFB800">
+        <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+      </svg>
+      <span>모은 별: <strong id="star-count">0</strong>개</span>
+    </div>
+  </header>
+
+  <main>
+    <!-- 1. 책장 화면 -->
+    <section id="bookshelf-view" style="width: 100%;">
+      <h1 class="bookshelf-title">오늘 어떤 영어 그림책을 읽어볼까요?</h1>
+      <p class="bookshelf-sub">그림을 보며 영어를 듣고, 노란색 단어를 눌러 뜻을 배워보아요!</p>
+      <div class="book-grid" id="book-list"></div>
+    </section>
+
+    <!-- 2. 그림책 읽기 화면 -->
+    <section id="reader-view" class="reader-container">
+      <div class="reader-top-bar">
+        <button class="btn-home" onclick="goHome()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          </svg>
+          책장으로
+        </button>
+        <div class="progress-dots" id="progress-dots"></div>
+        <span class="page-indicator" id="page-indicator">1 / 5</span>
+      </div>
+
+      <div class="story-stage">
+        <!-- 상황 일러스트레이션 SVG 영역 -->
+        <div class="illustration-frame" id="illustration-container">
+          <!-- 동적 SVG 삽입 -->
+        </div>
+
+        <!-- 텍스트 및 학습 패널 -->
+        <div class="text-panel">
+          <div>
+            <div class="english-sentence" id="english-text"></div>
+            <div class="korean-translation" id="korean-text"></div>
+
+            <div class="vocab-box">
+              <div class="vocab-label">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="#E67E22">
+                  <circle cx="12" cy="12" r="10"/>
+                  <text x="12" y="16" text-anchor="middle" fill="white" font-size="13" font-weight="bold">?</text>
+                </svg>
+                단어를 눌러 소리를 들어보세요!
+              </div>
+              <div class="vocab-chips" id="vocab-list"></div>
+            </div>
+          </div>
+
+          <div class="audio-controls">
+            <button class="btn-action btn-listen" onclick="speakCurrentSentence(0.9)">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
+              </svg>
+              전체 듣기
+            </button>
+            <button class="btn-action btn-slow" onclick="speakCurrentSentence(0.65)">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+              </svg>
+              천천히 듣기
+            </button>
+            <button class="btn-action btn-translate" onclick="toggleTranslation()">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12.87 15.07l-2.54-2.51.03-.03A17.52 17.52 0 0014.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04z"/>
+              </svg>
+              한글 뜻 보기
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-footer">
+        <button class="btn-nav btn-prev" id="btn-prev" onclick="prevPage()">◀ 이전 장</button>
+        <button class="btn-nav btn-next" id="btn-next" onclick="nextPage()">다음 장 ▶</button>
+      </div>
+    </section>
+
+    <!-- 3. 독후 퀴즈 화면 -->
+    <section id="quiz-view" class="quiz-container">
+      <div class="quiz-badge" id="quiz-step-badge">퀴즈 1 / 2</div>
+      <h2 class="quiz-question-en" id="quiz-q-en"></h2>
+      <p class="quiz-question-ko" id="quiz-q-ko"></p>
+      <div class="quiz-options" id="quiz-options"></div>
+      <div class="feedback-msg" id="quiz-feedback"></div>
+    </section>
+
+    <!-- 4. 완독 보상 화면 -->
+    <section id="reward-view" class="reward-screen">
+      <svg class="trophy-svg" viewBox="0 0 120 120">
+        <circle cx="60" cy="60" r="54" fill="#FFF5CC"/>
+        <path d="M40 30 H80 V55 C80 70 70 80 60 80 C50 80 40 70 40 55 Z" fill="#FFB800" stroke="#D98200" stroke-width="3"/>
+        <path d="M40 38 H28 C25 38 25 55 40 58" fill="none" stroke="#FFB800" stroke-width="5" stroke-linecap="round"/>
+        <path d="M80 38 H92 C95 38 95 55 80 58" fill="none" stroke="#FFB800" stroke-width="5" stroke-linecap="round"/>
+        <rect x="54" y="80" width="12" height="16" fill="#D98200"/>
+        <rect x="42" y="94" width="36" height="10" rx="5" fill="#FF8A3D"/>
+        <polygon points="60,40 64,50 75,50 66,56 69,66 60,60 51,66 54,56 45,50 56,50" fill="#FFF"/>
+      </svg>
+      <h2 style="font-family: 'Jua', sans-serif; font-size: 2rem; color: #E06D22; margin-bottom: 10px;">
+        참 잘했어요! 그림책 한 권을 다 읽었어요!
+      </h2>
+      <p style="font-size: 1.15rem; color: #555; margin-bottom: 24px;">
+        칭찬 별 스티커 <strong>+2개</strong>를 받았어요!
+      </p>
+      <button class="btn-start" style="max-width: 280px;" onclick="goHome()">다른 그림책 고르기</button>
+    </section>
+  </main>
+
+  <script>
+    // =========================================================================
+    // 1. 상황을 생생하게 묘사하는 맞춤형 SVG 일러스트레이션 데이터
+    // =========================================================================
+    const ILLUSTRATIONS = {
+      // [책 1 표지 & 장면들: The Red Balloon]
+      bear_cover: `
+        <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="sky1" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#87CEEB"/>
+              <stop offset="100%" stop-color="#E0F7FA"/>
+            </linearGradient>
+          </defs>
+          <rect width="400" height="300" fill="url(#sky1)"/>
+          <g fill="#FFFFFF" opacity="0.9">
+            <circle cx="70" cy="60" r="22"/><circle cx="95" cy="55" r="28"/><circle cx="120" cy="62" r="20"/>
+            <circle cx="300" cy="50" r="18"/><circle cx="322" cy="48" r="24"/><circle cx="342" cy="54" r="18"/>
+          </g>
+          <path d="M0 220 Q120 180 250 220 T400 210 V300 H0 Z" fill="#81C784"/>
+          <path d="M0 245 Q200 215 400 250 V300 H0 Z" fill="#66BB6A"/>
+          <!-- 곰돌이 (Bear) -->
+          <g transform="translate(135, 115)">
+            <circle cx="25" cy="25" r="16" fill="#8D5524"/>
+            <circle cx="25" cy="25" r="8" fill="#D2996C"/>
+            <circle cx="85" cy="25" r="16" fill="#8D5524"/>
+            <circle cx="85" cy="25" r="8" fill="#D2996C"/>
+            <ellipse cx="55" cy="110" rx="38" ry="42" fill="#A0622D"/>
+            <ellipse cx="55" cy="112" rx="22" ry="26" fill="#E0AC69"/>
+            <circle cx="55" cy="52" r="36" fill="#A0622D"/>
+            <ellipse cx="55" cy="60" rx="16" ry="13" fill="#E0AC69"/>
+            <ellipse cx="55" cy="55" rx="6" ry="4" fill="#3E2723"/>
+            <path d="M48 65 Q55 72 62 65" fill="none" stroke="#3E2723" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="42" cy="45" r="4" fill="#212121"/>
+            <circle cx="68" cy="45" r="4" fill="#212121"/>
+            <path d="M22 95 Q5 80 15 65" fill="none" stroke="#A0622D" stroke-width="14" stroke-linecap="round"/>
+            <path d="M88 95 Q110 85 105 68" fill="none" stroke="#A0622D" stroke-width="14" stroke-linecap="round"/>
+          </g>
+          <path d="M240 183 Q255 130 275 95" fill="none" stroke="#555" stroke-width="2"/>
+          <ellipse cx="282" cy="65" rx="26" ry="32" fill="#FF4D4D"/>
+          <polygon points="276,96 286,96 281,102" fill="#FF4D4D"/>
+          <ellipse cx="273" cy="53" rx="6" ry="11" fill="#FF9999" transform="rotate(-20 273 53)"/>
+        </svg>
+      `,
+
+      bear_p1: `
+        <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+          <rect width="400" height="300" fill="#DDF3FF"/>
+          <rect x="45" y="130" width="18" height="90" fill="#795548"/>
+          <circle cx="54" cy="115" r="38" fill="#4CAF50"/>
+          <rect x="330" y="140" width="16" height="80" fill="#795548"/>
+          <circle cx="338" cy="125" r="34" fill="#43A047"/>
+          <rect x="0" y="210" width="400" height="90" fill="#7CB342"/>
+          <circle cx="80" cy="245" r="5" fill="#FFF176"/><circle cx="310" cy="255" r="5" fill="#FF8A80"/>
+          <g transform="translate(120, 105)">
+            <circle cx="25" cy="25" r="15" fill="#8D5524"/><circle cx="85" cy="25" r="15" fill="#8D5524"/>
+            <ellipse cx="55" cy="108" rx="36" ry="40" fill="#A0622D"/>
+            <ellipse cx="55" cy="110" rx="20" ry="24" fill="#E0AC69"/>
+            <circle cx="55" cy="52" r="35" fill="#A0622D"/>
+            <ellipse cx="55" cy="60" rx="15" ry="12" fill="#E0AC69"/>
+            <circle cx="55" cy="54" r="4.5" fill="#3E2723"/>
+            <path d="M38 45 Q43 39 48 45" fill="none" stroke="#212121" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M62 45 Q67 39 72 45" fill="none" stroke="#212121" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M47 64 Q55 73 63 64" fill="none" stroke="#3E2723" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M88 95 L112 72" stroke="#A0622D" stroke-width="14" stroke-linecap="round"/>
+            <path d="M22 95 L8 115" stroke="#A0622D" stroke-width="14" stroke-linecap="round"/>
+          </g>
+          <line x1="232" y1="177" x2="265" y2="105" stroke="#555" stroke-width="2"/>
+          <ellipse cx="272" cy="70" rx="30" ry="36" fill="#E53935"/>
+          <polygon points="265,105 277,105 271,112" fill="#E53935"/>
+          <ellipse cx="261" cy="56" rx="7" ry="13" fill="#FFCDD2" transform="rotate(-20 261 56)"/>
+        </svg>
+      `,
+
+      bear_p2: `
+        <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+          <rect width="400" height="300" fill="#CFE8F3"/>
+          <rect x="0" y="215" width="400" height="85" fill="#7CB342"/>
+          <path d="M20 70 Q110 50 170 75 T310 65" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round" opacity="0.85"/>
+          <path d="M40 110 Q140 90 210 115 T360 100" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" opacity="0.75"/>
+          <path d="M10 150 Q90 135 150 155" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
+          <ellipse cx="140" cy="60" rx="8" ry="4" fill="#689F38" transform="rotate(25 140 60)"/>
+          <ellipse cx="290" cy="115" rx="9" ry="4" fill="#FFA000" transform="rotate(-15 290 115)"/>
+          <g transform="translate(100, 110)">
+            <circle cx="25" cy="25" r="15" fill="#8D5524"/><circle cx="85" cy="25" r="15" fill="#8D5524"/>
+            <ellipse cx="55" cy="108" rx="36" ry="40" fill="#A0622D"/>
+            <circle cx="55" cy="52" r="35" fill="#A0622D"/>
+            <ellipse cx="55" cy="60" rx="15" ry="12" fill="#E0AC69"/>
+            <circle cx="42" cy="44" r="5" fill="#212121"/><circle cx="43" cy="43" r="1.5" fill="#FFF"/>
+            <circle cx="68" cy="44" r="5" fill="#212121"/><circle cx="69" cy="43" r="1.5" fill="#FFF"/>
+            <ellipse cx="55" cy="66" rx="6" ry="8" fill="#3E2723"/>
+            <path d="M24 90 L10 55" stroke="#A0622D" stroke-width="14" stroke-linecap="round"/>
+            <path d="M86 90 L105 50" stroke="#A0622D" stroke-width="14" stroke-linecap="round"/>
+          </g>
+          <path d="M290 85 Q280 115 295 140" fill="none" stroke="#555" stroke-width="2"/>
+          <ellipse cx="305" cy="52" rx="24" ry="30" fill="#E53935" transform="rotate(20 305 52)"/>
+        </svg>
+      `,
+
+      bear_p3: `
+        <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+          <rect width="400" height="300" fill="#E1F5FE"/>
+          <rect x="280" y="60" width="45" height="240" fill="#6D4C41"/>
+          <path d="M285 110 L170 95" stroke="#6D4C41" stroke-width="16" stroke-linecap="round"/>
+          <circle cx="290" cy="60" r="75" fill="#43A047"/>
+          <circle cx="220" cy="75" r="55" fill="#4CAF50"/>
+          <circle cx="350" cy="80" r="50" fill="#388E3C"/>
+          <ellipse cx="195" cy="60" rx="24" ry="29" fill="#E53935"/>
+          <path d="M195 89 Q190 105 198 118" fill="none" stroke="#444" stroke-width="2"/>
+          <rect x="0" y="235" width="400" height="65" fill="#7CB342"/>
+          <g transform="translate(75, 130)">
+            <circle cx="25" cy="25" r="14" fill="#8D5524"/><circle cx="80" cy="25" r="14" fill="#8D5524"/>
+            <ellipse cx="52" cy="100" rx="33" ry="36" fill="#A0622D"/>
+            <circle cx="52" cy="50" r="32" fill="#A0622D"/>
+            <ellipse cx="52" cy="57" rx="14" ry="11" fill="#E0AC69"/>
+            <path d="M36 42 L46 45" stroke="#212121" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M68 42 L58 45" stroke="#212121" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="41" cy="48" r="3.5" fill="#212121"/>
+            <circle cx="63" cy="48" r="3.5" fill="#212121"/>
+            <path d="M45 66 Q52 60 59 66" fill="none" stroke="#3E2723" stroke-width="2.5" stroke-linecap="round"/>
+          </g>
+        </svg>
+      `,
+
+      bear_p4: `
+        <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+          <rect width="400" height="300" fill="#E1F5FE"/>
+          <rect x="300" y="70" width="40" height="230" fill="#6D4C41"/>
+          <path d="M305 120 L200 105" stroke="#6D4C41" stroke-width="14" stroke-linecap="round"/>
+          <circle cx="300" cy="65" r="70" fill="#4CAF50"/>
+          <rect x="0" y="235" width="400" height="65" fill="#7CB342"/>
+          <g transform="translate(150, 75)">
+            <path d="M25 22 Q10 0 38 12" fill="#1E88E5"/>
+            <ellipse cx="32" cy="26" rx="18" ry="13" fill="#29B6F6"/>
+            <circle cx="44" cy="20" r="10" fill="#29B6F6"/>
+            <circle cx="47" cy="18" r="2.2" fill="#111"/>
+            <polygon points="53,19 63,22 53,25" fill="#FFB300"/>
+            <path d="M22 25 Q8 18 28 32" fill="#0288D1"/>
+          </g>
+          <line x1="212" y1="97" x2="245" y2="75" stroke="#444" stroke-width="2"/>
+          <ellipse cx="262" cy="58" rx="22" ry="27" fill="#E53935"/>
+          <g transform="translate(65, 130)">
+            <circle cx="25" cy="25" r="14" fill="#8D5524"/><circle cx="80" cy="25" r="14" fill="#8D5524"/>
+            <ellipse cx="52" cy="100" rx="33" ry="36" fill="#A0622D"/>
+            <circle cx="52" cy="50" r="32" fill="#A0622D"/>
+            <ellipse cx="52" cy="57" rx="14" ry="11" fill="#E0AC69"/>
+            <circle cx="41" cy="45" r="4" fill="#212121"/>
+            <circle cx="63" cy="45" r="4" fill="#212121"/>
+            <path d="M44 62 Q52 71 60 62" fill="none" stroke="#3E2723" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M84 85 L105 60" stroke="#A0622D" stroke-width="13" stroke-linecap="round"/>
+          </g>
+        </svg>
+      `,
+
+      bear_p5: `
+        <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+          <rect width="400" height="300" fill="#FFF9C4"/>
+          <circle cx="340" cy="55" r="32" fill="#FFD54F"/>
+          <rect x="0" y="220" width="400" height="80" fill="#81C784"/>
+          <g transform="translate(135, 105)">
+            <circle cx="25" cy="25" r="15" fill="#8D5524"/><circle cx="85" cy="25" r="15" fill="#8D5524"/>
+            <ellipse cx="55" cy="108" rx="36" ry="40" fill="#A0622D"/>
+            <ellipse cx="55" cy="110" rx="20" ry="24" fill="#E0AC69"/>
+            <circle cx="55" cy="52" r="35" fill="#A0622D"/>
+            <ellipse cx="55" cy="60" rx="15" ry="12" fill="#E0AC69"/>
+            <circle cx="55" cy="54" r="4.5" fill="#3E2723"/>
+            <path d="M38 45 Q43 38 48 45" fill="none" stroke="#212121" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M62 45 Q67 38 72 45" fill="none" stroke="#212121" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M45 63 Q55 75 65 63 Z" fill="#E57373" stroke="#3E2723" stroke-width="2"/>
+            <path d="M88 95 L112 72" stroke="#A0622D" stroke-width="14" stroke-linecap="round"/>
+            <g transform="translate(-5, 62)">
+              <ellipse cx="18" cy="18" rx="14" ry="10" fill="#29B6F6"/>
+              <circle cx="26" cy="12" r="8" fill="#29B6F6"/>
+              <circle cx="28" cy="10" r="2" fill="#111"/>
+              <polygon points="33,11 40,13 33,15" fill="#FFB300"/>
+            </g>
+          </g>
+          <line x1="247" y1="177" x2="275" y2="105" stroke="#555" stroke-width="2"/>
+          <ellipse cx="282" cy="70" rx="28" ry="34" fill="#E53935"/>
+          <path d="M115 95 C115 88 105 88 105 95 C105 102 115 108 115 108 C115 108 125 102 125 95 C125 88 115 88 115 95 Z" fill="#FF5252"/>
+        </svg>
+      `,
+
+      // [책 2 표지 & 장면들: The Rainy Day]
+      puppy_cover: `
+        <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+          <rect width="400" height="300" fill="#B3E5FC"/>
+          <g fill="#78909C">
+            <circle cx="90" cy="55" r="26"/><circle cx="125" cy="50" r="32"/><circle cx="160" cy="58" r="24"/>
+          </g>
+          <g stroke="#0288D1" stroke-width="3" stroke-linecap="round">
+            <line x1="80" y1="95" x2="74" y2="112"/><line x1="120" y1="95" x2="114" y2="112"/>
+            <line x1="160" y1="95" x2="154" y2="112"/><line x1="280" y1="70" x2="274" y2="87"/>
+            <line x1="330" y1="90" x2="324" y2="107"/>
+          </g>
+          <rect x="0" y="220" width="400" height="80" fill="#A5D6A7"/>
+          <ellipse cx="205" cy="255" rx="95" ry="20" fill="#4FC3F7"/>
+          <!-- 강아지 (Puppy) -->
+          <g transform="translate(145, 105)">
+            <path d="M22 65 C22 20 98 20 98 65 Z" fill="#FFD54F" stroke="#FBC02D" stroke-width="3"/>
+            <circle cx="60" cy="58" r="26" fill="#D7CCC8"/>
+            <ellipse cx="34" cy="60" rx="8" ry="18" fill="#8D6E63"/>
+            <ellipse cx="86" cy="60" rx="8" ry="18" fill="#8D6E63"/>
+            <circle cx="51" cy="54" r="3.5" fill="#212121"/>
+            <circle cx="69" cy="54" r="3.5" fill="#212121"/>
+            <ellipse cx="60" cy="62" rx="5" ry="3.5" fill="#3E2723"/>
+            <path d="M53 69 Q60 76 67 69" fill="none" stroke="#3E2723" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M32 82 L88 82 L98 135 L22 135 Z" fill="#FFCA28" stroke="#FBC02D" stroke-width="2"/>
+            <circle cx="60" cy="98" r="3.5" fill="#E65100"/>
+            <circle cx="60" cy="116" r="3.5" fill="#E65100"/>
+            <rect x="36" y="135" width="16" height="18" rx="4" fill="#E53935"/>
+            <rect x="68" y="135" width="16" height="18" rx="4" fill="#E53935"/>
+          </g>
+        </svg>
+      `,
+
+      puppy_p1: `
+        <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+          <rect width="400" height="300" fill="#CFD8DC"/>
+          <rect x="40" y="45" width="130" height="140" rx="8" fill="#81D4FA" stroke="#5D4037" stroke-width="8"/>
+          <line x1="105" y1="45" x2="105" y2="185" stroke="#5D4037" stroke-width="6"/>
+          <line x1="40" y1="115" x2="170" y2="115" stroke="#5D4037" stroke-width="6"/>
+          <g stroke="#0277BD" stroke-width="2.5" stroke-linecap="round">
+            <line x1="65" y1="65" x2="58" y2="85"/><line x1="90" y1="75" x2="83" y2="95"/>
+            <line x1="130" y1="60" x2="123" y2="80"/><line x1="150" y1="130" x2="143" y2="150"/>
+            <line x1="75" y1="135" x2="68" y2="155"/>
+          </g>
+          <rect x="0" y="220" width="400" height="80" fill="#FFE0B2"/>
+          <g transform="translate(215, 115)">
+            <ellipse cx="55" cy="95" rx="30" ry="36" fill="#D7CCC8"/>
+            <circle cx="55" cy="48" r="28" fill="#D7CCC8"/>
+            <ellipse cx="28" cy="52" rx="9" ry="20" fill="#8D6E63"/>
+            <ellipse cx="82" cy="52" rx="9" ry="20" fill="#8D6E63"/>
+            <circle cx="45" cy="44" r="4" fill="#212121"/>
+            <circle cx="65" cy="44" r="4" fill="#212121"/>
+            <ellipse cx="55" cy="53" rx="5" ry="3.5" fill="#3E2723"/>
+            <path d="M48 61 Q55 68 62 61" fill="none" stroke="#3E2723" stroke-width="2.5" stroke-linecap="round"/>
+          </g>
+        </svg>
+      `,
+
+      puppy_p2: `
+        <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+          <rect width="400" height="300" fill="#FFF8E1"/>
+          <rect x="0" y="225" width="400" height="75" fill="#D7CCC8"/>
+          <g transform="translate(140, 85)">
+            <path d="M20 65 C20 15 100 15 100 65 Z" fill="#FFD54F" stroke="#F57F17" stroke-width="3"/>
+            <circle cx="60" cy="58" r="27" fill="#D7CCC8"/>
+            <ellipse cx="33" cy="60" rx="8" ry="18" fill="#8D6E63"/>
+            <ellipse cx="87" cy="60" rx="8" ry="18" fill="#8D6E63"/>
+            <circle cx="50" cy="53" r="4" fill="#212121"/>
+            <circle cx="70" cy="53" r="4" fill="#212121"/>
+            <ellipse cx="60" cy="62" rx="5" ry="3.5" fill="#3E2723"/>
+            <path d="M51 69 Q60 77 69 69" fill="none" stroke="#3E2723" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M30 82 L90 82 L102 142 L18 142 Z" fill="#FFCA28" stroke="#F57F17" stroke-width="2.5"/>
+            <circle cx="60" cy="100" r="4" fill="#E65100"/><circle cx="60" cy="120" r="4" fill="#E65100"/>
+            <rect x="32" y="142" width="20" height="24" rx="5" fill="#E53935"/>
+            <rect x="68" y="142" width="20" height="24" rx="5" fill="#E53935"/>
+            <rect x="30" y="142" width="24" height="5" fill="#FFCDD2"/>
+            <rect x="66" y="142" width="24" height="5" fill="#FFCDD2"/>
+          </g>
+        </svg>
+      `,
+
+      puppy_p3: `
+        <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+          <rect width="400" height="300" fill="#B3E5FC"/>
+          <rect x="0" y="210" width="400" height="90" fill="#81C784"/>
+          <ellipse cx="200" cy="250" rx="115" ry="24" fill="#29B6F6"/>
+          <path d="M125 240 Q110 215 100 225" fill="none" stroke="#4FC3F7" stroke-width="4" stroke-linecap="round"/>
+          <path d="M275 240 Q290 215 300 225" fill="none" stroke="#4FC3F7" stroke-width="4" stroke-linecap="round"/>
+          <circle cx="115" cy="205" r="5" fill="#29B6F6"/><circle cx="285" cy="205" r="5" fill="#29B6F6"/>
+          <g transform="translate(140, 75)">
+            <path d="M20 65 C20 15 100 15 100 65 Z" fill="#FFD54F"/>
+            <circle cx="60" cy="58" r="27" fill="#D7CCC8"/>
+            <ellipse cx="30" cy="52" rx="9" ry="18" fill="#8D6E63" transform="rotate(-20 30 52)"/>
+            <ellipse cx="90" cy="52" rx="9" ry="18" fill="#8D6E63" transform="rotate(20 90 52)"/>
+            <path d="M45 52 Q50 46 55 52" fill="none" stroke="#212121" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M65 52 Q70 46 75 52" fill="none" stroke="#212121" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M51 67 Q60 78 69 67 Z" fill="#FF8A80" stroke="#3E2723" stroke-width="2"/>
+            <path d="M30 82 L90 82 L102 138 L18 138 Z" fill="#FFCA28"/>
+            <path d="M28 90 L8 65" stroke="#FFCA28" stroke-width="14" stroke-linecap="round"/>
+            <path d="M92 90 L112 65" stroke="#FFCA28" stroke-width="14" stroke-linecap="round"/>
+            <rect x="32" y="138" width="20" height="22" rx="5" fill="#E53935"/>
+            <rect x="68" y="138" width="20" height="22" rx="5" fill="#E53935"/>
+          </g>
+        </svg>
+      `,
+
+      puppy_p4: `
+        <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+          <rect width="400" height="300" fill="#E1F5FE"/>
+          <circle cx="330" cy="55" r="34" fill="#FFD54F"/>
+          <path d="M30 220 A160 160 0 0 1 350 220" fill="none" stroke="#FF5252" stroke-width="10"/>
+          <path d="M40 220 A150 150 0 0 1 340 220" fill="none" stroke="#FFB74D" stroke-width="10"/>
+          <path d="M50 220 A140 140 0 0 1 330 220" fill="none" stroke="#FFF176" stroke-width="10"/>
+          <path d="M60 220 A130 130 0 0 1 320 220" fill="none" stroke="#81C784" stroke-width="10"/>
+          <path d="M70 220 A120 120 0 0 1 310 220" fill="none" stroke="#4FC3F7" stroke-width="10"/>
+          <rect x="0" y="220" width="400" height="80" fill="#7CB342"/>
+          <g transform="translate(145, 115)">
+            <ellipse cx="55" cy="95" rx="30" ry="34" fill="#D7CCC8"/>
+            <circle cx="55" cy="48" r="27" fill="#D7CCC8"/>
+            <ellipse cx="29" cy="52" rx="8" ry="18" fill="#8D6E63"/>
+            <ellipse cx="81" cy="52" rx="8" ry="18" fill="#8D6E63"/>
+            <circle cx="46" cy="43" r="4" fill="#212121"/>
+            <circle cx="64" cy="43" r="4" fill="#212121"/>
+            <ellipse cx="55" cy="52" rx="5" ry="3.5" fill="#3E2723"/>
+            <path d="M47 60 Q55 69 63 60" fill="none" stroke="#3E2723" stroke-width="2.5" stroke-linecap="round"/>
+          </g>
+        </svg>
+      `
+    };
+
+    // =========================================================================
+    // 2. 7세 맞춤형 영어 그림책 스토리 데이터 (이름 제거 버전)
+    // =========================================================================
+    const STORIES = [
+      {
+        id: "bear_balloon",
+        titleEn: "The Red Balloon",
+        titleKo: "빨간 풍선",
+        level: "기초 1단계 · 동물 친구",
+        coverSvg: ILLUSTRATIONS.bear_cover,
+        pages: [
+          {
+            svg: ILLUSTRATIONS.bear_p1,
+            sfxName: "풍선 통통 소리",
+            sfxType: "boing",
+            en: "The bear has a big red balloon.",
+            ko: "곰이 크고 빨간 풍선을 가지고 있어요.",
+            vocab: [
+              { word: "bear", meaning: "곰" },
+              { word: "big", meaning: "큰" },
+              { word: "balloon", meaning: "풍선" }
+            ]
+          },
+          {
+            svg: ILLUSTRATIONS.bear_p2,
+            sfxName: "바람 쌩~ 소리",
+            sfxType: "wind",
+            en: "Whoosh! The wind blows the balloon up into the sky.",
+            ko: "쌩~! 바람이 불어 풍선이 하늘 위로 날아가 버렸어요.",
+            vocab: [
+              { word: "wind", meaning: "바람" },
+              { word: "up", meaning: "위로" },
+              { word: "sky", meaning: "하늘" }
+            ]
+          },
+          {
+            svg: ILLUSTRATIONS.bear_p3,
+            sfxName: "나뭇잎 바스락",
+            sfxType: "rustle",
+            en: "Oh no! The balloon is stuck in a tall tree.",
+            ko: "이런! 풍선이 키 큰 나무에 걸리고 말았어요.",
+            vocab: [
+              { word: "stuck", meaning: "걸린, 갇힌" },
+              { word: "tall", meaning: "키가 큰" },
+              { word: "tree", meaning: "나무" }
+            ]
+          },
+          {
+            svg: ILLUSTRATIONS.bear_p4,
+            sfxName: "파랑새 짹짹",
+            sfxType: "bird",
+            en: "A little blue bird flies up and helps the bear.",
+            ko: "작은 파랑새가 날아올라 곰을 도와주었어요.",
+            vocab: [
+              { word: "little", meaning: "작은" },
+              { word: "bird", meaning: "새" },
+              { word: "helps", meaning: "도와준다" }
+            ]
+          },
+          {
+            svg: ILLUSTRATIONS.bear_p5,
+            sfxName: "신나는 멜로디",
+            sfxType: "happy",
+            en: "Thank you, little bird! Now they are best friends.",
+            ko: "고마워, 작은 새야! 이제 둘은 가장 친한 친구가 되었어요.",
+            vocab: [
+              { word: "Thank you", meaning: "고마워" },
+              { word: "friends", meaning: "친구들" }
+            ]
+          }
+        ],
+        quiz: [
+          {
+            qEn: "What color is the bear's balloon?",
+            qKo: "곰의 풍선은 무슨 색깔이었나요?",
+            options: [
+              { en: "Red", ko: "빨간색", correct: true },
+              { en: "Green", ko: "초록색", correct: false }
+            ]
+          },
+          {
+            qEn: "Who helps the bear get the balloon?",
+            qKo: "누가 곰의 풍선을 되찾아주었나요?",
+            options: [
+              { en: "A big lion", ko: "큰 사자", correct: false },
+              { en: "A little blue bird", ko: "작은 파랑새", correct: true }
+            ]
+          }
+        ]
+      },
+      {
+        id: "pip_rainy",
+        titleEn: "The Rainy Day",
+        titleKo: "비 오는 날",
+        level: "기초 2단계 · 날씨와 색깔",
+        coverSvg: ILLUSTRATIONS.puppy_cover,
+        pages: [
+          {
+            svg: ILLUSTRATIONS.puppy_p1,
+            sfxName: "빗방울 똑똑",
+            sfxType: "rain",
+            en: "Drip, drop! It is raining outside today.",
+            ko: "똑똑! 오늘 바깥에 비가 내리고 있어요.",
+            vocab: [
+              { word: "raining", meaning: "비가 내리는" },
+              { word: "outside", meaning: "바깥에" },
+              { word: "today", meaning: "오늘" }
+            ]
+          },
+          {
+            svg: ILLUSTRATIONS.puppy_p2,
+            sfxName: "장화 뽀드득",
+            sfxType: "boing",
+            en: "The puppy puts on a yellow coat and red boots.",
+            ko: "강아지가 노란색 우비와 빨간색 장화를 신었어요.",
+            vocab: [
+              { word: "yellow", meaning: "노란색" },
+              { word: "coat", meaning: "외투, 우비" },
+              { word: "boots", meaning: "장화" }
+            ]
+          },
+          {
+            svg: ILLUSTRATIONS.puppy_p3,
+            sfxName: "물웅덩이 첨벙!",
+            sfxType: "splash",
+            en: "Splash! The puppy jumps in a big blue puddle.",
+            ko: "첨벙! 강아지가 크고 파란 물웅덩이에서 폴짝 뛰어요.",
+            vocab: [
+              { word: "jumps", meaning: "점프한다, 뛴다" },
+              { word: "puddle", meaning: "물웅덩이" }
+            ]
+          },
+          {
+            svg: ILLUSTRATIONS.puppy_p4,
+            sfxName: "무지개 반짝!",
+            sfxType: "happy",
+            en: "Look! The sun comes out and a rainbow shines.",
+            ko: "보세요! 해가 나오고 예쁜 무지개가 반짝여요.",
+            vocab: [
+              { word: "sun", meaning: "해, 태양" },
+              { word: "rainbow", meaning: "무지개" }
+            ]
+          }
+        ],
+        quiz: [
+          {
+            qEn: "What color are the puppy's boots?",
+            qKo: "강아지의 장화는 무슨 색깔인가요?",
+            options: [
+              { en: "Red boots", ko: "빨간색 장화", correct: true },
+              { en: "Yellow boots", ko: "노란색 장화", correct: false }
+            ]
+          },
+          {
+            qEn: "What shines in the sky after the rain?",
+            qKo: "비가 그친 뒤 하늘에 무엇이 반짝였나요?",
+            options: [
+              { en: "A snowman", ko: "눈사람", correct: false },
+              { en: "A rainbow", ko: "무지개", correct: true }
+            ]
+          }
+        ]
+      }
+    ];
+
+    // =========================================================================
+    // 3. 앱 상태 및 오디오/음성 엔진 (Web Speech API & Web Audio API)
+    // =========================================================================
+    let currentStory = null;
+    let currentPageIndex = 0;
+    let currentQuizIndex = 0;
+    let stars = 0;
+    let isTranslationVisible = false;
+
+    function playSoundEffect(type) {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        const now = ctx.currentTime;
+
+        if (type === 'boing') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(180, now);
+          osc.frequency.exponentialRampToValueAtTime(520, now + 0.25);
+          gain.gain.setValueAtTime(0.3, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+          osc.start(now);
+          osc.stop(now + 0.3);
+        } else if (type === 'wind' || type === 'rustle') {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(300, now);
+          osc.frequency.linearRampToValueAtTime(600, now + 0.25);
+          osc.frequency.linearRampToValueAtTime(220, now + 0.55);
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.6);
+          osc.start(now);
+          osc.stop(now + 0.6);
+        } else if (type === 'bird') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(1200, now);
+          osc.frequency.exponentialRampToValueAtTime(1800, now + 0.1);
+          osc.frequency.setValueAtTime(1400, now + 0.15);
+          osc.frequency.exponentialRampToValueAtTime(2000, now + 0.25);
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+          osc.start(now);
+          osc.stop(now + 0.3);
+        } else if (type === 'rain' || type === 'splash') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(600, now);
+          osc.frequency.exponentialRampToValueAtTime(250, now + 0.2);
+          gain.gain.setValueAtTime(0.25, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+          osc.start(now);
+          osc.stop(now + 0.25);
+        } else if (type === 'happy') {
+          const notes = [523.25, 659.25, 783.99, 1046.5];
+          notes.forEach((freq, i) => {
+            const o = ctx.createOscillator();
+            const g = ctx.createGain();
+            o.type = 'triangle';
+            o.frequency.setValueAtTime(freq, now + i * 0.1);
+            g.gain.setValueAtTime(0.2, now + i * 0.1);
+            g.gain.exponentialRampToValueAtTime(0.01, now + i * 0.1 + 0.25);
+            o.connect(g);
+            g.connect(ctx.destination);
+            o.start(now + i * 0.1);
+            o.stop(now + i * 0.1 + 0.25);
+          });
+        }
+      } catch (e) {
+        console.log("Audio effect not supported", e);
+      }
+    }
+
+    function speakText(text, rate = 0.88) {
+      if (!('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = 'en-US';
+      utter.rate = rate;
+      utter.pitch = 1.1;
+
+      const voices = window.speechSynthesis.getVoices();
+      const preferred = voices.find(v => v.lang.includes('en-US') && (v.name.includes('Female') || v.name.includes('Samantha') || v.name.includes('Google')));
+      if (preferred) utter.voice = preferred;
+
+      window.speechSynthesis.speak(utter);
+    }
+
+    // =========================================================================
+    // 4. 화면 렌더링 및 인터랙션 로직
+    // =========================================================================
+    function initBookshelf() {
+      const listEl = document.getElementById('book-list');
+      listEl.innerHTML = '';
+
+      STORIES.forEach(story => {
+        const card = document.createElement('div');
+        card.className = 'book-card';
+        card.onclick = () => openStory(story.id);
+        card.innerHTML = `
+          <div class="book-cover-art">${story.coverSvg}</div>
+          <span class="book-level">${story.level}</span>
+          <h2 class="book-title-en">${story.titleEn}</h2>
+          <p class="book-title-ko">${story.titleKo}</p>
+          <button class="btn-start">그림책 읽기 ▶</button>
+        `;
+        listEl.appendChild(card);
+      });
+    }
+
+    function goHome() {
+      window.speechSynthesis.cancel();
+      document.getElementById('bookshelf-view').style.display = 'block';
+      document.getElementById('reader-view').style.display = 'none';
+      document.getElementById('quiz-view').style.display = 'none';
+      document.getElementById('reward-view').style.display = 'none';
+    }
+
+    function openStory(storyId) {
+      currentStory = STORIES.find(s => s.id === storyId);
+      currentPageIndex = 0;
+      isTranslationVisible = false;
+
+      document.getElementById('bookshelf-view').style.display = 'none';
+      document.getElementById('quiz-view').style.display = 'none';
+      document.getElementById('reward-view').style.display = 'none';
+      document.getElementById('reader-view').style.display = 'flex';
+
+      renderPage();
+    }
+
+    function renderPage() {
+      const page = currentStory.pages[currentPageIndex];
+      const total = currentStory.pages.length;
+
+      document.getElementById('page-indicator').textContent = `${currentPageIndex + 1} / ${total}`;
+      const dotsEl = document.getElementById('progress-dots');
+      dotsEl.innerHTML = '';
+      for (let i = 0; i < total; i++) {
+        const dot = document.createElement('div');
+        dot.className = 'dot' + (i === currentPageIndex ? ' active' : (i < currentPageIndex ? ' done' : ''));
+        dotsEl.appendChild(dot);
+      }
+
+      const illusContainer = document.getElementById('illustration-container');
+      illusContainer.innerHTML = `
+        ${page.svg}
+        <button class="sfx-badge" onclick="playSoundEffect('${page.sfxType}')">
+          🔊 ${page.sfxName}
+        </button>
+      `;
+
+      const enContainer = document.getElementById('english-text');
+      enContainer.innerHTML = '';
+      const keyWordsLower = page.vocab.map(v => v.word.toLowerCase());
+
+      const words = page.en.split(' ');
+      words.forEach(rawWord => {
+        const cleanWord = rawWord.replace(/[^a-zA-Z]/g, '').toLowerCase();
+        const span = document.createElement('span');
+        span.textContent = rawWord + ' ';
+        span.className = 'word-token';
+
+        if (keyWordsLower.some(kw => kw.split(' ').includes(cleanWord)) && cleanWord.length > 1) {
+          span.classList.add('key-word');
+        }
+
+        span.onclick = () => {
+          span.classList.add('speaking');
+          speakText(rawWord.replace(/[^a-zA-Z']/g, ''), 0.85);
+          setTimeout(() => span.classList.remove('speaking'), 500);
+        };
+
+        enContainer.appendChild(span);
+      });
+
+      const koEl = document.getElementById('korean-text');
+      koEl.textContent = page.ko;
+      koEl.className = 'korean-translation' + (isTranslationVisible ? ' visible' : '');
+
+      const vocabEl = document.getElementById('vocab-list');
+      vocabEl.innerHTML = '';
+      page.vocab.forEach(item => {
+        const chip = document.createElement('div');
+        chip.className = 'vocab-chip';
+        chip.innerHTML = `
+          <span class="vocab-en">${item.word}</span>
+          <span class="vocab-ko">${item.meaning}</span>
+        `;
+        chip.onclick = () => speakText(item.word, 0.8);
+        vocabEl.appendChild(chip);
+      });
+
+      document.getElementById('btn-prev').disabled = currentPageIndex === 0;
+      const nextBtn = document.getElementById('btn-next');
+      if (currentPageIndex === total - 1) {
+        nextBtn.textContent = '퀴즈 풀기 ★';
+      } else {
+        nextBtn.textContent = '다음 장 ▶';
+      }
+
+      setTimeout(() => speakCurrentSentence(0.88), 250);
+    }
+
+    function speakCurrentSentence(rate) {
+      const page = currentStory.pages[currentPageIndex];
+      speakText(page.en, rate);
+    }
+
+    function toggleTranslation() {
+      isTranslationVisible = !isTranslationVisible;
+      const koEl = document.getElementById('korean-text');
+      koEl.classList.toggle('visible', isTranslationVisible);
+    }
+
+    function prevPage() {
+      if (currentPageIndex > 0) {
+        currentPageIndex--;
+        renderPage();
+      }
+    }
+
+    function nextPage() {
+      if (currentPageIndex < currentStory.pages.length - 1) {
+        currentPageIndex++;
+        renderPage();
+      } else {
+        startQuiz();
+      }
+    }
+
+    // =========================================================================
+    // 5. 독후 퀴즈 및 별 스티커 보상
+    // =========================================================================
+    function startQuiz() {
+      window.speechSynthesis.cancel();
+      currentQuizIndex = 0;
+      document.getElementById('reader-view').style.display = 'none';
+      document.getElementById('quiz-view').style.display = 'block';
+      renderQuiz();
+    }
+
+    function renderQuiz() {
+      const qData = currentStory.quiz[currentQuizIndex];
+      document.getElementById('quiz-step-badge').textContent = `독후 퀴즈 ${currentQuizIndex + 1} / ${currentStory.quiz.length}`;
+      document.getElementById('quiz-q-en').textContent = qData.qEn;
+      document.getElementById('quiz-q-ko').textContent = qData.qKo;
+      document.getElementById('quiz-feedback').textContent = '';
+
+      speakText(qData.qEn, 0.88);
+
+      const optionsEl = document.getElementById('quiz-options');
+      optionsEl.innerHTML = '';
+
+      qData.options.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = 'quiz-option-btn';
+        btn.innerHTML = `
+          <span class="quiz-opt-en">${opt.en}</span>
+          <span class="quiz-opt-ko">${opt.ko}</span>
+        `;
+        btn.onclick = () => handleQuizAnswer(btn, opt);
+        optionsEl.appendChild(btn);
+      });
+    }
+
+    function handleQuizAnswer(btnEl, opt) {
+      const feedbackEl = document.getElementById('quiz-feedback');
+      speakText(opt.en, 0.9);
+
+      if (opt.correct) {
+        btnEl.classList.add('correct');
+        playSoundEffect('happy');
+        feedbackEl.style.color = '#28A745';
+        feedbackEl.textContent = '정답이에요! 정말 잘 읽었네요!';
+
+        const allBtns = document.querySelectorAll('.quiz-option-btn');
+        allBtns.forEach(b => b.disabled = true);
+
+        setTimeout(() => {
+          if (currentQuizIndex < currentStory.quiz.length - 1) {
+            currentQuizIndex++;
+            renderQuiz();
+          } else {
+            finishStory();
+          }
+        }, 1400);
+      } else {
+        btnEl.classList.add('wrong');
+        playSoundEffect('boing');
+        feedbackEl.style.color = '#E53935';
+        feedbackEl.textContent = '아쉬워요! 다시 한 번 생각해볼까요?';
+      }
+    }
+
+    function finishStory() {
+      stars += 2;
+      document.getElementById('star-count').textContent = stars;
+      document.getElementById('quiz-view').style.display = 'none';
+      document.getElementById('reward-view').style.display = 'block';
+      playSoundEffect('happy');
+    }
+
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.onvoiceschanged = () => {};
+    }
+
+    initBookshelf();
+  </script>
+</body>
+</html>
